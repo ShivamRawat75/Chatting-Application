@@ -11,20 +11,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.net.*;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-public class Server implements ActionListener{
+public class Client implements ActionListener{
 
         JTextField text;
         static JPanel a1;
-        static Box vertical=Box.createVerticalBox();
-        static JFrame f=new JFrame();
+       static Box vertical=Box.createVerticalBox();
         static DataOutputStream dout;
-     Server() {
+        static JFrame f=new JFrame();
+     Client() {
          
          f.setLayout(null);
          JPanel p1= new JPanel();
@@ -48,7 +50,7 @@ public class Server implements ActionListener{
              }
          });
          
-         ImageIcon i4=new ImageIcon(ClassLoader.getSystemResource("icons/1.png"));
+         ImageIcon i4=new ImageIcon(ClassLoader.getSystemResource("icons/2.png"));
          Image i5=i4.getImage().getScaledInstance(50,50,Image.SCALE_DEFAULT);
          ImageIcon i6=new ImageIcon(i5);
          JLabel profile=new JLabel(i6);
@@ -76,7 +78,7 @@ public class Server implements ActionListener{
          dots.setBounds(390,20,10,25);
          p1.add(dots);
          
-         JLabel name=new JLabel("Teenu");
+         JLabel name=new JLabel("Bunty");
          name.setBounds(110,20,100,18);
          name.setForeground(Color.white);
          name.setFont(new Font("SAN_SERIF",Font.BOLD,18));
@@ -107,7 +109,7 @@ public class Server implements ActionListener{
          f.add(send);
          
          f.setSize(450,700);
-         f.setLocation(200, 50);
+         f.setLocation(700, 50);
          f.setUndecorated(true);
          
         f.getContentPane().setBackground(Color.WHITE);
@@ -118,6 +120,7 @@ public class Server implements ActionListener{
      public void actionPerformed(ActionEvent ae)
      {
          try {
+             
              String out= text.getText();
         System.out.println(out);
         
@@ -135,14 +138,12 @@ public class Server implements ActionListener{
         a1.add(vertical,BorderLayout.PAGE_START);
        // repaint();
        // invalidate();
-       
        dout.writeUTF(out);
-       
-       
         f.validate();
         text.setText("");
-        
+             
          } catch (Exception e) {
+             
              e.printStackTrace();
          }
         
@@ -176,19 +177,16 @@ public class Server implements ActionListener{
         
     }
     public static void main(String[] args) {
-         new Server();
+         new Client();
+         
          try {
-            ServerSocket skt=new ServerSocket(6001);
-            while(true)
-            {
-                Socket s=skt.accept();
-                DataInputStream din=new DataInputStream(s.getInputStream());
-                dout =new DataOutputStream(s.getOutputStream());
-               
-                
-                while (true) {      
-                    
-                    //a1.setLayout(new BorderLayout());
+             
+             Socket s=new Socket("127.0.0.1",6001);
+             DataInputStream din=new DataInputStream(s.getInputStream());
+             dout =new DataOutputStream(s.getOutputStream());
+             
+             while (true) {                    
+                 a1.setLayout(new BorderLayout());
                     String msg=din.readUTF();
                     JPanel panel=formatLable(msg);
                     
@@ -197,14 +195,15 @@ public class Server implements ActionListener{
                     left.add(panel,BorderLayout.LINE_START);
                     
                     vertical.add(left);
-                    
+                    vertical.add(Box.createVerticalStrut(15));
+                    a1.add(vertical,BorderLayout.PAGE_START);
                     f.validate();
                 }
-            }
-                
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
+         
     }
     
     
